@@ -125,8 +125,8 @@ export default {
             'X-CSRFToken': csrfToken
           }
         })
-        .then(function () {
-          console.log('SUCCESS!!')
+        .then(function (response) {
+          console.log('SUCCESS!! with response', response.data)
         })
         .catch(function () {
           console.log('FAILURE!!')

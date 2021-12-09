@@ -12,7 +12,10 @@ from django.middleware import csrf
 def handle_upload(request):
     # I can assume now that only GET or POST requests make it this far
     # ...
-    response = HttpResponse()
+    if request.method == "POST":
+        response = JsonResponse({'filesize': request.FILES['file'].size})
+    else:
+        response = JsonResponse({'options': ''})
     return response
 
 
