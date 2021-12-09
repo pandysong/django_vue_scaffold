@@ -13,7 +13,10 @@ def handle_upload(request):
     # I can assume now that only GET or POST requests make it this far
     # ...
     if request.method == "POST":
-        response = JsonResponse({'filesize': request.FILES['file'].size})
+        if 'file' in request.FILES:
+            response = JsonResponse({'filesize': request.FILES['file'].size})
+        else:
+            response = JsonResponse({'error': 'missing files'})
     else:
         response = JsonResponse({'options': ''})
     return response

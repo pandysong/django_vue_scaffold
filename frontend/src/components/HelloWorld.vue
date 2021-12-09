@@ -8,7 +8,7 @@
         <button type="submit" @click="submitFile">submit</button>
         </div>
       </form>
-
+      <p v-if='filesize'> file size: {{ filesize }} </p>
     <ul>
       <li>
         <a
@@ -100,7 +100,8 @@ axios.defaults.withCredentials = true
 export default {
   name: 'HelloWorld',
   data: () => ({
-    file: ''
+    file: '',
+    filesize: 0
   }),
   components: {
   },
@@ -117,6 +118,8 @@ export default {
       formData.append('file', this.file)
       console.log('>> formData >> ', formData)
 
+      var comp = this
+
       // You should have a server side REST API
       axios.post('http://localhost:8000/api/upload',
         formData, {
@@ -127,6 +130,8 @@ export default {
         })
         .then(function (response) {
           console.log('SUCCESS!! with response', response.data)
+          console.log(comp)
+          comp.filesize = response.data['filesize']
         })
         .catch(function () {
           console.log('FAILURE!!')
