@@ -1,7 +1,14 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
     <h2>Essential Links</h2>
+
+      <form>
+        <input type="file" name="file" @change="handleFile">
+        <div class="submit">
+        <button type="submit" @click="submitFile">submit</button>
+        </div>
+      </form>
+
     <ul>
       <li>
         <a
@@ -84,11 +91,55 @@
 </template>
 
 <script>
+import axios from 'axios'
+
+axios.defaults.xsrfHeaderName = 'X-CSRFToken'
+axios.defaults.xsrfCookieName = 'csrftoken'
+axios.defaults.withCredentials = true
+
 export default {
   name: 'HelloWorld',
-  data () {
-    return {
-      msg: 'Welcome to Your Vue.js App'
+  data: () => ({
+    file: ''
+  }),
+  components: {
+  },
+  methods: {
+    submitFile () {
+      // send a GET request to backend and get teh csrftoken from cookie
+      // we will cover it more in the backend parts
+      fetch('http://localhost:8080/api/csrf')
+
+      // The csrftoken is embedded in the cookie
+      const csrfToken = this.getCookie('csrftoken')
+      // console.log(csrfToken)
+      let formData = new FormData()
+      formData.append('file', this.file)
+      console.log('>> formData >> ', formData)
+
+      // You should have a server side REST API
+      axios.post('http://localhost:8000/api/upload',
+        formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'X-CSRFToken': csrfToken
+          }
+        })
+        .then(function () {
+          console.log('SUCCESS!!')
+        })
+        .catch(function () {
+          console.log('FAILURE!!')
+        })
+    },
+    handleFile (event) {
+      this.file = event.target.files[0]
+      console.log('>>>> 1st element in files array >>>> ', this.file)
+    },
+    getCookie (name) {
+      var value = '; ' + document.cookie
+      var parts = value.split('; ' + name + '=')
+      if (parts.length === 2) return parts.pop().split(';').shift()
     }
   }
 }
